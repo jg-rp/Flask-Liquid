@@ -1,0 +1,26 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+flask = "*"
+python-liquid = "*"
+flask-liquid = {editable = true, path = "."}
+blinker = "*"
+
+[dev-packages]
+black = "*"
+pylint = "*"
+flake8 = "*"
+coverage = "*"
+rstcheck = "*"
+docutils = "*"
+flake8-bugbear = "*"
+twine = "*"
+
+[requires]
+python_version = "3.8"
+
+[pipenv]
+allow_prereleases = true
