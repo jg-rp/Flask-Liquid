@@ -12,7 +12,6 @@ Render Liquid templates in your Flask applications.
 - `Flask Standard Context`_
 - `Context Processors`_
 - `Signals`_
-- `Configuration`_
 - `Contributing`_
 
 
@@ -195,12 +194,12 @@ a dictionary.
 Signals
 -------
 
-TODO:
+By default, when `signals are available <https://flask.palletsprojects.com/en/1.1.x/api/#flask.signals.signals_available>`_,
+Flask-Liquid will send a ``before_render_template`` and ``template_rendered`` signal for each
+successful call to ``render_template`` and ``render_template_string``.
 
-Configuration
--------------
-
-TODO:
+You can disable these signals for Liquid templates by setting the ``LIQUID_FLASK_SIGNALS``
+configuration value to ``False``.
 
 
 Contributing

@@ -20,7 +20,7 @@ clean:
 	python -Bc "import pathlib; [p.rmdir() for p in pathlib.Path('.').rglob('__pycache__')]"
 	rm -f .coverage
 	rm -rf htmlcov
-	rm -rf Liquid.egg-info
+	rm -rf Flask_Liquid.egg-info
 	rm -rf build
 	rm -rf dist
 
