@@ -6,7 +6,7 @@ with open("README.rst", "r") as fd:
 
 setuptools.setup(
     name="Flask-Liquid",
-    version="0.1.1",
+    version="0.1.2",
     description="A Flask extension for rendering Liquid templates.",
     long_description=long_description,
     long_description_content_type="text/x-rst",
@@ -14,7 +14,7 @@ setuptools.setup(
     packages=setuptools.find_packages(exclude=["tests*"]),
     include_package_data=True,
     zip_safe=False,
-    install_requires=["flask>=0.7", "python-liquid"],
+    install_requires=["flask>=0.7", "python-liquid>=0.6.1"],
     test_suite="tests",
-    python_requires=">=3.8",
+    python_requires=">=3.7",
 )

@@ -20,10 +20,6 @@ from liquid import Template
 from liquid.loaders import BaseLoader
 from liquid.loaders import FileSystemLoader
 
-# TODO: Markupsafe!
-# TODO: README
-# TODO: Package
-
 
 class Liquid:
     """The Liquid template extension for Flask.
