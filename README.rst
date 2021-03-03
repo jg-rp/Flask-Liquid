@@ -24,7 +24,7 @@ Install and update using `pip <https://pip.pypa.io/en/stable/quickstart/>`_:
 
     $ python -m pip install -U flask-liquid
 
-Requires Python>=3.8.
+Requires Python>=3.7.
 
 Quick Start
 -----------
