@@ -10,6 +10,12 @@ from flask import Flask
 from flask import template_rendered
 from flask import before_render_template
 
+from liquid import Undefined
+from liquid import StrictUndefined
+
+from liquid.exceptions import UndefinedError
+from liquid.exceptions import NoSuchFilterFunc
+
 from liquid.loaders import DictLoader
 
 from flask_liquid import Liquid
@@ -221,3 +227,49 @@ class NoSignalsTestCase(TestCase):
             resp = self.app.test_client().get("/rendertemplate")
             self.assertEqual(resp.data, b"Hello World")
             self.assertEqual(len(templates), 0)
+
+
+class LiquidEnvironmentTestCase(TestCase):
+    """Liquid environment configuration test case."""
+
+    def test_undefined(self):
+        """Test that we can reference undefined variables without error."""
+        app = create_app(
+            config={"LIQUID_UNDEFINED": Undefined},
+        )
+
+        with app.app_context():
+            result = render_template_string(r"Hello, {{ nosuchthing }}.")
+            self.assertEqual(result, "Hello, .")
+
+    def test_strict_undefined(self):
+        """Test that we can set the `undefined` type."""
+        app = create_app(
+            config={"LIQUID_UNDEFINED": StrictUndefined},
+        )
+
+        with app.app_context():
+            with self.assertRaises(UndefinedError):
+                _ = render_template_string(r"Hello, {{ nosuchthing }}.")
+
+    def test_lax_filters(self):
+        """Test that undefined filters can be ignored."""
+        app = create_app(
+            config={"LIQUID_STRICT_FILTERS": False},
+            globals={"username": "You"},
+        )
+
+        with app.app_context():
+            result = render_template_string(r"Hello, {{ username | upper }}.")
+            self.assertEqual(result, "Hello, You.")
+
+    def test_strict_filters(self):
+        """Test that undefined filters can raise an exception."""
+        app = create_app(
+            config={"LIQUID_STRICT_FILTERS": True},
+            globals={"username": "You"},
+        )
+
+        with app.app_context():
+            with self.assertRaises(NoSuchFilterFunc):
+                _ = render_template_string(r"Hello, {{ username | upper }}.")

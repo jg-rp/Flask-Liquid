@@ -5,6 +5,7 @@ from itertools import chain
 
 from typing import Mapping
 from typing import Optional
+from typing import Type
 
 from flask import Flask
 from flask import current_app
@@ -16,6 +17,7 @@ from flask import _request_ctx_stack
 from liquid import Environment
 from liquid import Mode
 from liquid import Template
+from liquid import Undefined
 
 from liquid.loaders import BaseLoader
 from liquid.loaders import FileSystemLoader
@@ -24,25 +26,29 @@ from liquid.loaders import FileSystemLoader
 class Liquid:
     """The Liquid template extension for Flask.
 
-    Args:
-        tag_start_string: The sequence of characters indicating the start of a
-            liquid tag.
-        tag_end_string: The sequence of characters indicating the end of a
-            liquid tag.
-        statement_start_string: The sequence of characters indicating the start
-            of an output statement.
-        statement_end_string: The sequence of characters indicating the end
-            of an output statement.
-        tolerance: Indicates how tolerant to be of errors. Must be one of
-            `Mode.LAX`, `Mode.WARN` or `Mode.STRICT`.
-        loader: A template loader. Defaults to a FileSystem loader with a search path
-            at the same location as `app.template_folder`.
-        globals: A mapping that will be added to the context of any template
-            loaded from this environment.
-        flask_context_processors: If set to `True` Flask context processors
-            will be applied to Liquid every render context. Defaults to `False`.
-        flask_signals: If set to `True` the `template_rendered` and
-            `before_template_rendered` signals will be emitted for Liquid templates.
+    :param tag_start_string: The sequence of characters indicating the start of a liquid
+        tag.
+    :param tag_end_string: The sequence of characters indicating the end of a liquid
+        tag.
+    :param statement_start_string: The sequence of characters indicating the start of
+        an output statement.
+    :param statement_end_string: The sequence of characters indicating the end of an
+        output statement.
+    :param strip_tags: If `True` will strip leading and trailing whitespace from all
+        tags, regardless of whitespace control characters.
+    :param tolerance: Indicates how tolerant to be of errors. Must be one of
+        `Mode.LAX`, `Mode.WARN` or `Mode.STRICT`.
+    :param loader: A template loader. If you want to use the builtin "render" or
+        "include" tags, a loader must be configured.
+    :param undefined: A subclass of :class:`Undefined` that represents undefined values.
+    :param strict_filters: If `True`, the default, will raise an exception upon finding
+        an undefined filter. Otherwise undefined filters are silently ignored.
+    :param globals: A mapping that will be added to the context of any template
+        loaded from this environment.
+    :param flask_context_processors: If set to `True` Flask context processors
+        will be applied to Liquid every render context. Defaults to `False`.
+    :param flask_signals: If set to `True` the `template_rendered` and
+        `before_template_rendered` signals will be emitted for Liquid templates.
     """
 
     # pylint: disable=redefined-builtin too-many-arguments
@@ -55,6 +61,8 @@ class Liquid:
         statement_end_string: str = r"}}",
         tolerance: Mode = Mode.STRICT,
         loader: Optional[BaseLoader] = None,
+        undefined: Type[Undefined] = Undefined,
+        strict_filters: bool = True,
         globals: Optional[Mapping[str, object]] = None,
         flask_context_processors: bool = False,
         flask_signals: bool = True,
@@ -68,6 +76,8 @@ class Liquid:
             statement_end_string=statement_end_string,
             tolerance=tolerance,
             loader=loader,
+            undefined=undefined,
+            strict_filters=strict_filters,
             globals=globals,
         )
 
@@ -98,6 +108,9 @@ class Liquid:
             "LIQUID_STATEMENT_END_STRING", self.env.statement_end_string
         )
         app.config.setdefault("LIQUID_TOLERANCE", self.env.mode)
+        app.config.setdefault("LIQUID_UNDEFINED", self.env.undefined)
+        app.config.setdefault("LIQUID_STRICT_FILTERS", self.env.strict_filters)
+        app.config.setdefault("LIQUID_TOLERANCE", self.env.mode)
         app.config.setdefault("LIQUID_TEMPLATE_FOLDER", app.template_folder)
 
         app.config.setdefault(
@@ -118,6 +131,9 @@ class Liquid:
         self.env.tag_end_string = app.config["LIQUID_TAG_END_STRING"]
         self.env.statement_start_string = app.config["LIQUID_STATEMENT_START_STRING"]
         self.env.statement_end_string = app.config["LIQUID_STATEMENT_END_STRING"]
+        self.env.mode = app.config["LIQUID_TOLERANCE"]
+        self.env.undefined = app.config["LIQUID_UNDEFINED"]
+        self.env.strict_filters = app.config["LIQUID_STRICT_FILTERS"]
         self.env.mode = app.config["LIQUID_TOLERANCE"]
         self.env.loader = self._loader
 

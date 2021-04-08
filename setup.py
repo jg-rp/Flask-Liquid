@@ -14,7 +14,7 @@ setuptools.setup(
     packages=setuptools.find_packages(exclude=["tests*"]),
     include_package_data=True,
     zip_safe=False,
-    install_requires=["flask>=0.7", "python-liquid>=0.6.1"],
+    install_requires=["flask>=0.7", "python-liquid>=0.7.2"],
     test_suite="tests",
     python_requires=">=3.7",
 )
