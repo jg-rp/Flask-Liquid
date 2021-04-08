@@ -4,6 +4,18 @@ Flask-Liquid
 A `Flask <https://palletsprojects.com/p/flask/>`_ extension for `Liquid <https://github.com/jg-rp/liquid>`_.
 Render Liquid templates in your Flask applications.
 
+.. image:: https://img.shields.io/pypi/v/python-liquid.svg
+    :target: https://pypi.org/project/python-liquid/
+    :alt: Version
+
+.. image:: https://img.shields.io/pypi/l/python-liquid.svg
+    :target: https://pypi.org/project/python-liquid/
+    :alt: Licence
+
+.. image:: https://img.shields.io/pypi/pyversions/python-liquid.svg
+    :target: https://pypi.org/project/python-liquid/
+    :alt: Python versions
+
 - `Installing`_
 - `Quick Start`_
 - `Factories and Blueprints`_
