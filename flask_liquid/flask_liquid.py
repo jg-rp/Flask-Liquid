@@ -26,25 +26,47 @@ from liquid.loaders import FileSystemLoader
 class Liquid:
     """The Liquid template extension for Flask.
 
-    :param tag_start_string: The sequence of characters indicating the start of a liquid
-        tag.
+    :param tag_start_string: The sequence of characters indicating the start of a
+        liquid tag. Defaults to ``{%``.
+    :type tag_start_string: str
     :param tag_end_string: The sequence of characters indicating the end of a liquid
-        tag.
+        tag. Defaults to ``%}``.
+    :type tag_end_string: str
     :param statement_start_string: The sequence of characters indicating the start of
-        an output statement.
+        an output statement. Defaults to ``{{``.
+    :type statement_start_string: str
     :param statement_end_string: The sequence of characters indicating the end of an
-        output statement.
-    :param strip_tags: If `True` will strip leading and trailing whitespace from all
-        tags, regardless of whitespace control characters.
+        output statement. Defaults to ``}}``
+    :type statement_end_string: str
     :param tolerance: Indicates how tolerant to be of errors. Must be one of
-        `Mode.LAX`, `Mode.WARN` or `Mode.STRICT`.
+        ``Mode.LAX``, ``Mode.WARN`` or ``Mode.STRICT``. Defaults to ``Mode.STRICT``.
+    :type tolerance: Mode
     :param loader: A template loader. If you want to use the builtin "render" or
-        "include" tags, a loader must be configured.
+        "include" tags, a loader must be configured. Defaults to an empty
+        :class:`liquid.loaders.DictLoader`.
+    :type loader: liquid.loaders.BaseLoader
     :param undefined: A subclass of :class:`Undefined` that represents undefined values.
-    :param strict_filters: If `True`, the default, will raise an exception upon finding
-        an undefined filter. Otherwise undefined filters are silently ignored.
-    :param globals: A mapping that will be added to the context of any template
-        loaded from this environment.
+        Could be one of the built-in undefined types, :class:`Undefined`,
+        :class:`DebugUndefined` or :class:`StrictUndefined`. Defaults to
+        :class:`Undefined`, an undefined type that silently ignores undefined values.
+    :type undefined: liquid.Undefined
+    :param strict_filters: If ``True``, will raise an exception upon finding an
+        undefined filter. Otherwise undefined filters are silently ignored. Defaults to
+        ``True``.
+    :type strict_filters: bool
+    :param autoescape: If `True`, all context values will be HTML-escaped before output
+        unless they've been explicitly marked as "safe". Requires the package
+        Markupsafe. Defaults to ``False``.
+    :type autoescape: bool
+    :param auto_reload: If `True`, loaders that have an ``uptodate`` callable will
+        reload template source data automatically. For deployments where template
+        sources don't change between service reloads, setting auto_reload to `False` can
+        yield an increase in performance by avoiding calls to ``uptodate``. Defaults to
+        ``True``.
+    :type auto_reload: bool
+    :param globals: An optional mapping that will be added to the context of any
+        template loaded from this environment. Defaults to ``None``.
+    :type globals: dict
     :param flask_context_processors: If set to `True` Flask context processors
         will be applied to Liquid every render context. Defaults to `False`.
     :param flask_signals: If set to `True` the `template_rendered` and
@@ -55,6 +77,7 @@ class Liquid:
     def __init__(
         self,
         app: Optional[Flask] = None,
+        *,
         tag_start_string: str = r"{%",
         tag_end_string: str = r"%}",
         statement_start_string: str = r"{{",
@@ -63,6 +86,8 @@ class Liquid:
         loader: Optional[BaseLoader] = None,
         undefined: Type[Undefined] = Undefined,
         strict_filters: bool = True,
+        autoescape: bool = True,
+        auto_reload: bool = True,
         globals: Optional[Mapping[str, object]] = None,
         flask_context_processors: bool = False,
         flask_signals: bool = True,
@@ -78,6 +103,8 @@ class Liquid:
             loader=loader,
             undefined=undefined,
             strict_filters=strict_filters,
+            autoescape=autoescape,
+            auto_reload=auto_reload,
             globals=globals,
         )
 
@@ -112,6 +139,8 @@ class Liquid:
         app.config.setdefault("LIQUID_STRICT_FILTERS", self.env.strict_filters)
         app.config.setdefault("LIQUID_TOLERANCE", self.env.mode)
         app.config.setdefault("LIQUID_TEMPLATE_FOLDER", app.template_folder)
+        app.config.setdefault("LIQUID_AUTOESCAPE", self.env.autoescape)
+        app.config.setdefault("LIQUID_AUTO_RELOAD", self.env.auto_reload)
 
         app.config.setdefault(
             "LIQUID_FLASK_CONTEXT_PROCESSORS", self.flask_context_processors
@@ -134,6 +163,8 @@ class Liquid:
         self.env.mode = app.config["LIQUID_TOLERANCE"]
         self.env.undefined = app.config["LIQUID_UNDEFINED"]
         self.env.strict_filters = app.config["LIQUID_STRICT_FILTERS"]
+        self.env.autoescape = app.config["LIQUID_AUTOESCAPE"]
+        self.env.auto_reload = app.config["LIQUID_AUTO_RELOAD"]
         self.env.mode = app.config["LIQUID_TOLERANCE"]
         self.env.loader = self._loader
 

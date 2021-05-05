@@ -273,3 +273,31 @@ class LiquidEnvironmentTestCase(TestCase):
         with app.app_context():
             with self.assertRaises(NoSuchFilterFunc):
                 _ = render_template_string(r"Hello, {{ username | upper }}.")
+
+    def test_autoescape(self):
+        """Test that autoescape is enabled by default."""
+        app = create_app(
+            config={},
+            globals={"username": "You"},
+        )
+
+        with app.app_context():
+            result = render_template_string(
+                r"Hello, {{ foo }}.",
+                foo="<b>you</b>",
+            )
+            self.assertEqual(result, "Hello, &lt;b&gt;you&lt;/b&gt;.")
+
+    def test_disable_autoescape(self):
+        """Test that we can disable autoescape."""
+        app = create_app(
+            config={"LIQUID_AUTOESCAPE": False},
+            globals={"username": "You"},
+        )
+
+        with app.app_context():
+            result = render_template_string(
+                r"Hello, {{ foo }}.",
+                foo="<b>you</b>",
+            )
+            self.assertEqual(result, "Hello, <b>you</b>.")

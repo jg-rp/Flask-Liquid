@@ -1,8 +1,11 @@
+
+.. _Liquid: https://github.com/jg-rp/liquid
+
 Flask-Liquid
 ============
 
-A `Flask <https://palletsprojects.com/p/flask/>`_ extension for `Liquid <https://github.com/jg-rp/liquid>`_.
-Render Liquid templates in your Flask applications.
+A `Flask <https://palletsprojects.com/p/flask/>`_ extension for `Liquid`_. Render Liquid
+templates in your Flask applications.
 
 .. image:: https://img.shields.io/pypi/v/flask-liquid.svg
     :target: https://pypi.org/project/flask-liquid/
@@ -36,14 +39,15 @@ Install and update using `pip <https://pip.pypa.io/en/stable/quickstart/>`_:
 
     $ python -m pip install -U flask-liquid
 
-Requires Python>=3.7.
 
 Quick Start
 -----------
 
-Flask-Liquid provides ``render_template`` and ``render_template_string`` functions that behave much
-like the `Flask equivalents <https://flask.palletsprojects.com/en/1.1.x/quickstart/#rendering-templates>`_
-of the same name. By default Flask-Liquid will look for templates in the ``templates`` folder. The same
+.. _Flask equivalents: https://flask.palletsprojects.com/en/1.1.x/quickstart/#rendering-templates
+
+Flask-Liquid provides ``render_template`` and ``render_template_string`` functions that
+behave much like the `Flask equivalents`_ of the same name. By default Flask-Liquid will
+look for templates in the ``templates`` folder. The same
 location Flask uses for Jinja templates.
 
 .. code-block:: python
@@ -63,8 +67,8 @@ location Flask uses for Jinja templates.
         return render_template("index.html", name=name)
 
 
-Set the ``LIQUID_TEMPLATE_FOLDER`` configuration value to change the Liquid template folder
-independently of ``app.template_folder``.
+Set the ``LIQUID_TEMPLATE_FOLDER`` configuration value to change the Liquid template
+folder independently of ``app.template_folder``.
 
 .. code-block:: python
 
@@ -104,8 +108,8 @@ when ``init_app`` is called.
 Mixing Jinja and Liquid
 -----------------------
 
-If you want to use Jinja and Liquid templates side by side, import Liquid render functions
-using an alias.
+If you want to use Jinja and Liquid templates side by side, import Liquid render
+functions using an alias.
 
 .. code-block:: Python
 
@@ -116,15 +120,17 @@ using an alias.
 Auto Escape
 +++++++++++
 
-Whereas Flask configures Jinja with auto escaping enabled by default, forcing you to explicitly
-mark strings of HTML (for example) or template blocks as safe, Liquid does the opposite. Liquid
-includes the ``escape`` and ``escape_once`` filters for escaping untrusted strings, but does not
-have a ``safe`` filter nor an auto escape feature.
+.. _MarkupSafe: https://github.com/pallets/markupsafe
 
-To render markup from a Liquid snippet inside a Jinja template, mark the string returned by
-``render_liquid_template`` as safe using ``Markup``, then include it in the Jinja template
-context. That is assuming you trust values in the Liquid render context and/or have used
-the ``escape`` filter appropriately in your Liquid templates.
+As of Flask-Liquid version 0.3.0, HTML auto-escaping is enabled by default. You can
+disable auto-escaping by passing ``autoescape=False`` to ``Liquid`` or setting the
+``LIQUID_AUTOESCAPE`` configuration value to ``False``. Both Jinja2 and Liquid use
+`Markupsafe`_.
+
+To render markup from a Liquid snippet inside a Jinja template (or vice versa), mark the
+string returned by ``render_liquid_template`` as safe using ``Markup``, then include it
+in the Jinja template context. That is assuming you trust values in the Liquid render
+context or have HTML escaped them already.
 
 .. code-block:: python
 
@@ -147,10 +153,12 @@ the ``escape`` filter appropriately in your Liquid templates.
 Flask Standard Context
 ----------------------
 
-Flask has some `standard context <https://flask.palletsprojects.com/en/1.1.x/templating/#standard-context>`_
-variables that are included in each Jinja template context automatically. Flask-Liquid does not
-include these variables. If you need access to the Flask session or request, for example, you'll
-need to manually map session or request properties to Liquid context keys.
+.. _standard context: https://flask.palletsprojects.com/en/1.1.x/templating/#standard-context
+
+Flask has some `standard context`_ variables that are included in each Jinja template
+context automatically. Flask-Liquid does not include these variables. If you need access
+to the Flask session or request, for example, you'll need to manually map session or
+request properties to Liquid context keys.
 
 .. code-block:: python
 
@@ -172,11 +180,11 @@ need to manually map session or request properties to Liquid context keys.
 Context Processors
 ------------------
 
-When the ``LIQUID_FLASK_CONTEXT_PROCESSORS`` configuration value is set to ``True``, Flask context
-processors will update Liquid template contexts too. Be aware that Python Liquid relies on the
-``Mapping`` interface for resolving identifiers, using ``operators.getitem`` internally. So for
-values returned from context processors to be useful within Liquid templates, they must behave like
-a dictionary.
+When the ``LIQUID_FLASK_CONTEXT_PROCESSORS`` configuration value is set to ``True``,
+Flask context processors will update Liquid template contexts too. Be aware that Python
+Liquid relies on the ``Mapping`` interface for resolving identifiers, using
+``operators.getitem`` internally. So for values returned from context processors to be
+useful within Liquid templates, they must behave like a dictionary.
 
 .. code-block:: python
 
@@ -206,23 +214,27 @@ a dictionary.
 Signals
 -------
 
-By default, when `signals are available <https://flask.palletsprojects.com/en/1.1.x/api/#flask.signals.signals_available>`_,
-Flask-Liquid will send a ``before_render_template`` and ``template_rendered`` signal for each
-successful call to ``render_template`` and ``render_template_string``.
+.. _signals are available: https://flask.palletsprojects.com/en/1.1.x/api/#flask.signals.signals_available
 
-You can disable these signals for Liquid templates by setting the ``LIQUID_FLASK_SIGNALS``
-configuration value to ``False``.
+By default, when `signals are available`_, Flask-Liquid will send a
+``before_render_template`` and ``template_rendered`` signal for each successful call to
+``render_template`` and ``render_template_string``.
+
+You can disable these signals for Liquid templates by setting the
+``LIQUID_FLASK_SIGNALS`` configuration value to ``False``.
 
 
 Contributing
 ------------
 
+.. _Pylance: https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-pylance
+.. _Pyright: https://github.com/microsoft/pyright
+
 - Install development dependencies with `Pipenv <https://github.com/pypa/pipenv>`_
 
 - Flask-Liquid fully embraces type hints and static type checking. I like to use the
-  `Pylance <https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-pylance>`_
-  extension for Visual Studio Code, which includes `Pyright <https://github.com/microsoft/pyright>`_
-  for static type checking.
+  `Pylance`_ extension for Visual Studio Code, which includes `Pyright`_ for static type
+  checking.
 
 - Format code using `black <https://github.com/psf/black>`_.
 
@@ -230,4 +242,5 @@ Contributing
 
 - Run tests with ``make test`` or ``python -m unittest``.
 
-- Check test coverage with ``make coverage`` and open ``htmlcov/index.html`` in your browser.
+- Check test coverage with ``make coverage`` and open ``htmlcov/index.html`` in your
+  browser.
