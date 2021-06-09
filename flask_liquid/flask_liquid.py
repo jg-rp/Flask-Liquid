@@ -223,6 +223,16 @@ class Liquid:
 
         return rendered
 
+    async def render_template_async(self, template_name: str, **context: ...) -> str:
+        """Render a Liquid template from the configured template loader."""
+        context = self._make_context(context)
+        template = await self.env.get_template_async(template_name)
+
+        with self._signals(template, context):
+            rendered = await template.render_async(**context)
+
+        return rendered
+
     def render_template_string(self, source: str, **context: ...) -> str:
         """Render a Liquid template from a template string."""
         context = self._make_context(context)
@@ -233,6 +243,16 @@ class Liquid:
 
         return rendered
 
+    async def render_template_string_async(self, source: str, **context: ...) -> str:
+        """Render a Liquid template from a template string."""
+        context = self._make_context(context)
+        template = self.env.from_string(source)
+
+        with self._signals(template, context):
+            rendered = await template.render_async(**context)
+
+        return rendered
+
 
 def render_template(template_name: str, **context: ...) -> str:
     """Render a Liquid template in the current Flask application context."""
@@ -240,8 +260,21 @@ def render_template(template_name: str, **context: ...) -> str:
     return ext.render_template(template_name, **context)
 
 
+async def render_template_async(template_name: str, **context: ...) -> str:
+    """Render a Liquid template in the current Flask application context."""
+    ext = current_app.extensions["flask_liquid"]
+    return await ext.render_template_async(template_name, **context)
+
+
 def render_template_string(source: str, **context: ...) -> str:
     """Render a Liquid template from a string in the current Flask application
     context."""
     ext = current_app.extensions["flask_liquid"]
     return ext.render_template_string(source, **context)
+
+
+async def render_template_string_async(source: str, **context: ...) -> str:
+    """Render a Liquid template from a string in the current Flask application
+    context."""
+    ext = current_app.extensions["flask_liquid"]
+    return await ext.render_template_string_async(source, **context)

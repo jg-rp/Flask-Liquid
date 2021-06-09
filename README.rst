@@ -224,6 +224,14 @@ You can disable these signals for Liquid templates by setting the
 ``LIQUID_FLASK_SIGNALS`` configuration value to ``False``.
 
 
+Async Support
+-------------
+
+Render templates asynchronously using ``flask_liquid.render_template_async`` and
+``flask_liquid.render_template_string_async``. As of Python Liquid version 0.7.7,
+templates can be loaded asynchronously with a suitable async template loader, and custom
+"drops" can implement ``__getitem_async__`` to perform blocking IO asynchronously.
+
 Contributing
 ------------
 

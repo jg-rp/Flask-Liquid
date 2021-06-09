@@ -1,6 +1,12 @@
 Flask Liquid Change Log
 =======================
 
+Version 0.4.0
+-------------
+
+- Added ``render_template_async`` and ``render_template_string_async`` functions for 
+  rendering templates asynchronously.
+
 Version 0.3.0
 -------------
 
