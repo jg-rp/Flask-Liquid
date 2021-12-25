@@ -19,6 +19,7 @@ docutils = "*"
 flake8-bugbear = "*"
 twine = "*"
 mypy = "*"
+types-cryptography = "*"
 
 [requires]
 python_version = "3.8"

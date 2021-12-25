@@ -63,6 +63,7 @@ def create_app(config, globals=None, loader=None):
     def with_context_from_processor():
         return render_template_string(r"{{ username }}")
 
+    # pylint: disable=invalid-name
     bp = Blueprint("blue", __name__, url_prefix="/blue")
 
     @bp.route("/greeting")
@@ -221,7 +222,9 @@ class LiquidLoaderTestCase(TestCase):
     def test_render_template(self):
         """Test that we can render a template from a location of our choosing."""
         with tempfile.TemporaryDirectory() as tmpdirname:
-            with open(os.path.join(tmpdirname, "index.html"), "w") as fd:
+            with open(
+                os.path.join(tmpdirname, "index.html"), "w", encoding="utf-8"
+            ) as fd:
                 fd.write(r"Hello {{ you }}")
 
             app = create_app(
