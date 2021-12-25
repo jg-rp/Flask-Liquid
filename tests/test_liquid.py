@@ -173,6 +173,12 @@ class DefaultLiquidTestCase(TestCase):
             resp = client.get("/rendertemplate")
             self.assertEqual(resp.data, b"Hello World")
 
+    def test_render_template_by_name(self):
+        """Test that we can render a liquid template from the file system."""
+        with self.app.test_client() as client:
+            resp = client.get("/render/snippet.html")
+            self.assertEqual(resp.data, b"Goodbye, World!\n")
+
     def test_render_with_global_context(self):
         """Test that we can render liquid templates with global context."""
         with self.app.test_client() as client:
@@ -264,10 +270,19 @@ class FlaskContextTestCase(TestCase):
             globals={"you": "World"},
         )
 
+        self.async_app = create_async_app(
+            config={"LIQUID_FLASK_CONTEXT_PROCESSORS": True},
+            globals={"you": "World"},
+        )
+
     def test_context_processor(self):
         """Test that we can use context variables from context processors in liquid
         templates."""
         with self.app.test_client() as client:
+            resp = client.get("/contextprocessor")
+            self.assertEqual(resp.data, b"some")
+
+        with self.async_app.test_client() as client:
             resp = client.get("/contextprocessor")
             self.assertEqual(resp.data, b"some")
 
@@ -380,3 +395,23 @@ class LiquidEnvironmentTestCase(TestCase):
                 foo="<b>you</b>",
             )
             self.assertEqual(result, "Hello, <b>you</b>.")
+
+    def test_enable_template_comments(self):
+        """Test that we can enable template comments."""
+        app = create_app(
+            config={"LIQUID_TEMPLATE_COMMENTS": True},
+            globals={"username": "You"},
+        )
+
+        with app.app_context():
+            result = render_template_string(r"Hello, {# some comment -#} World!")
+            self.assertEqual(result, "Hello, World!")
+
+    def test_expression_cache(self):
+        """Test that we can enable expresssion caching."""
+        app = create_app(
+            config={"LIQUID_EXPRESSION_CACHE_SIZE": 1},
+            globals={"username": "You"},
+        )
+        ext: Liquid = app.extensions["flask_liquid"]
+        self.assertTrue(hasattr(ext.env.parse_filtered_expression_value, "cache_info"))

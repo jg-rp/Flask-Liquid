@@ -45,6 +45,18 @@ class Liquid:
     :param statement_end_string: The sequence of characters indicating the end of an
         output statement. Defaults to ``}}``
     :type statement_end_string: str
+    :param template_comments: If ``True``, enable template comments. Where, by default,
+        anything between ``{#`` and ``#}`` is considered a comment. Defaults to
+        ``False``.
+    :type template_comments: bool
+    :param comment_start_string: The sequence of characters indicating the start of a
+        comment. Defaults to ``{#``. ``template_comments`` must be ``True`` for
+        ``comment_start_string`` to have any effect.
+    :type comment_start_string: str
+    :param comment_end_string: The sequence of characters indicating the end of a
+        comment. Defaults to ``#}``. ``template_comments`` must be ``True`` for
+        ``comment_end_string`` to have any effect.
+    :type comment_end_string: str
     :param tolerance: Indicates how tolerant to be of errors. Must be one of
         ``Mode.LAX``, ``Mode.WARN`` or ``Mode.STRICT``. Defaults to ``Mode.STRICT``.
     :type tolerance: Mode
@@ -71,6 +83,13 @@ class Liquid:
         yield an increase in performance by avoiding calls to ``uptodate``. Defaults to
         ``True``.
     :type auto_reload: bool
+    :param cache_size: The capacity of the template cache in number of templates.
+        Defaults to 300. If ``cache_size`` is ``None`` or less than ``1``, it has the
+        effect of setting ``auto_reload`` to ``False``.
+    :type cache_size: int
+    :param expression_cache_size: The capacity of each of the common expression caches.
+        Defaults to ``0``, disabling expression caching.
+    :type expression_cache_size: int
     :param globals: An optional mapping that will be added to the context of any
         template loaded from this environment. Defaults to ``None``.
     :type globals: dict
@@ -89,6 +108,9 @@ class Liquid:
         tag_end_string: str = r"%}",
         statement_start_string: str = r"{{",
         statement_end_string: str = r"}}",
+        template_comments: bool = False,
+        comment_start_string: str = "{#",
+        comment_end_string: str = "#}",
         tolerance: Mode = Mode.STRICT,
         loader: Optional[BaseLoader] = None,
         undefined: Type[Undefined] = Undefined,
@@ -98,6 +120,8 @@ class Liquid:
         globals: Optional[Mapping[str, object]] = None,
         flask_context_processors: bool = False,
         flask_signals: bool = True,
+        cache_size: int = 300,
+        expression_cache_size: int = 0,
     ):
         self.app = app
 
@@ -113,6 +137,11 @@ class Liquid:
             autoescape=autoescape,
             auto_reload=auto_reload,
             globals=globals,
+            template_comments=template_comments,
+            comment_start_string=comment_start_string,
+            comment_end_string=comment_end_string,
+            cache_size=cache_size,
+            expression_cache_size=expression_cache_size,
         )
 
         # init_app will default to a file system loader if one was not provided.
@@ -133,14 +162,36 @@ class Liquid:
 
     def init_app(self, app: Flask) -> None:
         """Initialise a Flask app with a Liquid environment."""
-        app.config.setdefault("LIQUID_TAG_START_STRING", self.env.tag_start_string)
-        app.config.setdefault("LIQUID_TAG_END_STRING", self.env.tag_end_string)
         app.config.setdefault(
-            "LIQUID_STATEMENT_START_STRING", self.env.statement_start_string
+            "LIQUID_TAG_START_STRING",
+            self.env.tag_start_string,
         )
         app.config.setdefault(
-            "LIQUID_STATEMENT_END_STRING", self.env.statement_end_string
+            "LIQUID_TAG_END_STRING",
+            self.env.tag_end_string,
         )
+        app.config.setdefault(
+            "LIQUID_STATEMENT_START_STRING",
+            self.env.statement_start_string,
+        )
+        app.config.setdefault(
+            "LIQUID_STATEMENT_END_STRING",
+            self.env.statement_end_string,
+        )
+
+        app.config.setdefault(
+            "LIQUID_TEMPLATE_COMMENTS",
+            self.env.template_comments,
+        )
+        app.config.setdefault(
+            "LIQUID_COMMENT_START_STRING",
+            self.env.comment_start_string or "{#",
+        )
+        app.config.setdefault(
+            "LIQUID_COMMENT_END_STRING",
+            self.env.comment_end_string or "#}",
+        )
+
         app.config.setdefault("LIQUID_TOLERANCE", self.env.mode)
         app.config.setdefault("LIQUID_UNDEFINED", self.env.undefined)
         app.config.setdefault("LIQUID_STRICT_FILTERS", self.env.strict_filters)
@@ -150,9 +201,18 @@ class Liquid:
         app.config.setdefault("LIQUID_AUTO_RELOAD", self.env.auto_reload)
 
         app.config.setdefault(
-            "LIQUID_FLASK_CONTEXT_PROCESSORS", self.flask_context_processors
+            "LIQUID_EXPRESSION_CACHE_SIZE",
+            self.env.expression_cache_size,
         )
-        app.config.setdefault("LIQUID_FLASK_SIGNALS", self.flask_signals)
+
+        app.config.setdefault(
+            "LIQUID_FLASK_CONTEXT_PROCESSORS",
+            self.flask_context_processors,
+        )
+        app.config.setdefault(
+            "LIQUID_FLASK_SIGNALS",
+            self.flask_signals,
+        )
 
         self.flask_signals = app.config["LIQUID_FLASK_SIGNALS"]
 
@@ -174,6 +234,17 @@ class Liquid:
         self.env.auto_reload = app.config["LIQUID_AUTO_RELOAD"]
         self.env.mode = app.config["LIQUID_TOLERANCE"]
         self.env.loader = self._loader
+
+        self.env.comment_start_string = app.config["LIQUID_COMMENT_START_STRING"]
+        self.env.comment_end_string = app.config["LIQUID_COMMENT_END_STRING"]
+        self.env.template_comments = app.config["LIQUID_TEMPLATE_COMMENTS"]
+
+        # Working around a bad decision in the Environment constructor.
+        if not self.env.template_comments:
+            self.env.comment_start_string = ""
+            self.env.comment_end_string = ""
+
+        self.env.set_expression_cache_size(app.config["LIQUID_EXPRESSION_CACHE_SIZE"])
 
         # Just in case init_app is called late and templates have already been loaded.
         self.env.cache.clear()

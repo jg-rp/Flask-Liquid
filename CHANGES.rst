@@ -5,6 +5,9 @@ Version 0.4.1
 -------------
 
 - Fixed typing issues. Mypy in strict mode.
+- Added ``cache_size``, ``expression_cache_size``, ``template_comments``,
+  ``comment_start_string`` and ``comment_end_string`` arguments to ``Liquid``. All of
+  these arguments get passed through to ``liquid.Environment``.
 
 Version 0.4.0
 -------------
