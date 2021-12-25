@@ -1,6 +1,11 @@
 Flask Liquid Change Log
 =======================
 
+Version 0.4.1
+-------------
+
+- Fixed typing issues. Mypy in strict mode.
+
 Version 0.4.0
 -------------
 

@@ -1,8 +1,12 @@
 """Add Liquid templates to a Flask application."""
+from __future__ import annotations
 
 from contextlib import contextmanager
 from itertools import chain
 
+from typing import Dict
+from typing import Iterable
+from typing import Iterator
 from typing import Mapping
 from typing import Optional
 from typing import Type
@@ -14,10 +18,13 @@ from flask import template_rendered
 from flask import before_render_template
 from flask import _request_ctx_stack
 
+from flask.typing import TemplateContextProcessorCallable
+
 from liquid import Environment
 from liquid import Mode
-from liquid import Template
 from liquid import Undefined
+
+from liquid.template import BoundTemplate
 
 from liquid.loaders import BaseLoader
 from liquid.loaders import FileSystemLoader
@@ -124,7 +131,7 @@ class Liquid:
         if app is not None:
             self.init_app(app)
 
-    def init_app(self, app: Flask):
+    def init_app(self, app: Flask) -> None:
         """Initialise a Flask app with a Liquid environment."""
         app.config.setdefault("LIQUID_TAG_START_STRING", self.env.tag_start_string)
         app.config.setdefault("LIQUID_TAG_END_STRING", self.env.tag_end_string)
@@ -174,15 +181,15 @@ class Liquid:
         app.extensions["flask_liquid"] = self
         self.app = app
 
-    def _make_context(self, context: Mapping[str, object]) -> Mapping[str, object]:
+    def _make_context(self, context: Dict[str, object]) -> Dict[str, object]:
         """Add the result of Flask context processors to the given context."""
         # NOTE: We're not using `app.update_template_context` because we don't want
         # g, request, session etc.
 
         # Updates `context` in place. Will not overwrite keys already in context.
-        if self.flask_context_processors:
+        if self.flask_context_processors and self.app:
             processors = self.app.template_context_processors
-            funcs = processors[None]
+            funcs: Iterable[TemplateContextProcessorCallable] = processors[None]
             request_context = _request_ctx_stack.top
             if request_context is not None:
                 blueprint = request_context.request.blueprint
@@ -196,7 +203,9 @@ class Liquid:
         return context
 
     @contextmanager
-    def _signals(self, template: Template, context: Mapping[str, object]):
+    def _signals(
+        self, template: BoundTemplate, context: Mapping[str, object]
+    ) -> Iterator[Liquid]:
         if signals_available and self.flask_signals:
             before_render_template.send(
                 self.app,
@@ -213,7 +222,7 @@ class Liquid:
                 context=context,
             )
 
-    def render_template(self, template_name: str, **context: ...) -> str:
+    def render_template(self, template_name: str, **context: object) -> str:
         """Render a Liquid template from the configured template loader."""
         context = self._make_context(context)
         template = self.env.get_template(template_name)
@@ -223,7 +232,7 @@ class Liquid:
 
         return rendered
 
-    async def render_template_async(self, template_name: str, **context: ...) -> str:
+    async def render_template_async(self, template_name: str, **context: object) -> str:
         """Render a Liquid template from the configured template loader."""
         context = self._make_context(context)
         template = await self.env.get_template_async(template_name)
@@ -233,7 +242,7 @@ class Liquid:
 
         return rendered
 
-    def render_template_string(self, source: str, **context: ...) -> str:
+    def render_template_string(self, source: str, **context: object) -> str:
         """Render a Liquid template from a template string."""
         context = self._make_context(context)
         template = self.env.from_string(source)
@@ -243,7 +252,7 @@ class Liquid:
 
         return rendered
 
-    async def render_template_string_async(self, source: str, **context: ...) -> str:
+    async def render_template_string_async(self, source: str, **context: object) -> str:
         """Render a Liquid template from a template string."""
         context = self._make_context(context)
         template = self.env.from_string(source)
@@ -254,27 +263,27 @@ class Liquid:
         return rendered
 
 
-def render_template(template_name: str, **context: ...) -> str:
+def render_template(template_name: str, **context: object) -> str:
     """Render a Liquid template in the current Flask application context."""
-    ext = current_app.extensions["flask_liquid"]
+    ext: Liquid = current_app.extensions["flask_liquid"]
     return ext.render_template(template_name, **context)
 
 
-async def render_template_async(template_name: str, **context: ...) -> str:
+async def render_template_async(template_name: str, **context: object) -> str:
     """Render a Liquid template in the current Flask application context."""
-    ext = current_app.extensions["flask_liquid"]
+    ext: Liquid = current_app.extensions["flask_liquid"]
     return await ext.render_template_async(template_name, **context)
 
 
-def render_template_string(source: str, **context: ...) -> str:
+def render_template_string(source: str, **context: object) -> str:
     """Render a Liquid template from a string in the current Flask application
     context."""
-    ext = current_app.extensions["flask_liquid"]
+    ext: Liquid = current_app.extensions["flask_liquid"]
     return ext.render_template_string(source, **context)
 
 
-async def render_template_string_async(source: str, **context: ...) -> str:
+async def render_template_string_async(source: str, **context: object) -> str:
     """Render a Liquid template from a string in the current Flask application
     context."""
-    ext = current_app.extensions["flask_liquid"]
+    ext: Liquid = current_app.extensions["flask_liquid"]
     return await ext.render_template_string_async(source, **context)
