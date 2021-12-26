@@ -17,6 +17,18 @@ jobs:
           - { name: "3.8", python: "3.8", os: ubuntu-latest, tox: py38 }
           - { name: "3.7", python: "3.7", os: ubuntu-latest, tox: py37 }
           - { name: "PyPy", python: pypy-3.7, os: ubuntu-latest, tox: pypy37 }
+          - {
+              name: "flask-v1",
+              python: "3.9",
+              os: ubuntu-latest,
+              tox: py39-flask1,
+            }
+          - {
+              name: "flask-v2",
+              python: "3.9",
+              os: ubuntu-latest,
+              tox: py39-flask2,
+            }
           - { name: "Typing", python: "3.9", os: ubuntu-latest, tox: typing }
           - { name: "Lint", python: "3.9", os: ubuntu-latest, tox: lint }
     steps:
