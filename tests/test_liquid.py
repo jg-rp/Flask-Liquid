@@ -5,7 +5,9 @@ import tempfile
 
 from contextlib import contextmanager
 from unittest import TestCase
+from unittest import skipIf
 
+import flask
 from flask import Flask
 from flask import Blueprint
 from flask import template_rendered
@@ -24,6 +26,9 @@ from flask_liquid import render_template
 from flask_liquid import render_template_string
 from flask_liquid import render_template_async
 from flask_liquid import render_template_string_async
+
+
+SKIP_ASYNC = bool(int(flask.__version__[0]) < 2)
 
 
 # pylint: disable=redefined-builtin unused-variable
@@ -212,6 +217,7 @@ class DefaultLiquidTestCase(TestCase):
             self.assertEqual("index.html", template.name)
 
 
+@skipIf(SKIP_ASYNC, "async views require flask>=2")
 class AsyncLiquidTestCase(DefaultLiquidTestCase):
     """Async Flask-Liquid test case."""
 
@@ -282,6 +288,10 @@ class FlaskContextTestCase(TestCase):
             resp = client.get("/contextprocessor")
             self.assertEqual(resp.data, b"some")
 
+    @skipIf(SKIP_ASYNC, "async views require flask>=2")
+    def test_context_processor_async(self):
+        """Test that we can use context variables from context processors in liquid
+        templates."""
         with self.async_app.test_client() as client:
             resp = client.get("/contextprocessor")
             self.assertEqual(resp.data, b"some")

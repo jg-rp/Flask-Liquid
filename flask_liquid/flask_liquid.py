@@ -4,6 +4,8 @@ from __future__ import annotations
 from contextlib import contextmanager
 from itertools import chain
 
+from typing import Any
+from typing import Callable
 from typing import Dict
 from typing import Iterable
 from typing import Iterator
@@ -18,8 +20,6 @@ from flask import template_rendered
 from flask import before_render_template
 from flask import _request_ctx_stack
 
-from flask.typing import TemplateContextProcessorCallable
-
 from liquid import Environment
 from liquid import Mode
 from liquid import Undefined
@@ -28,6 +28,9 @@ from liquid.template import BoundTemplate
 
 from liquid.loaders import BaseLoader
 from liquid.loaders import FileSystemLoader
+
+
+TemplateContextProcessorCallable = Callable[[], Dict[str, Any]]
 
 
 class Liquid:
@@ -99,7 +102,7 @@ class Liquid:
         `before_template_rendered` signals will be emitted for Liquid templates.
     """
 
-    # pylint: disable=redefined-builtin too-many-arguments
+    # pylint: disable=redefined-builtin too-many-arguments too-many-locals
     def __init__(
         self,
         app: Optional[Flask] = None,
@@ -195,7 +198,6 @@ class Liquid:
         app.config.setdefault("LIQUID_TOLERANCE", self.env.mode)
         app.config.setdefault("LIQUID_UNDEFINED", self.env.undefined)
         app.config.setdefault("LIQUID_STRICT_FILTERS", self.env.strict_filters)
-        app.config.setdefault("LIQUID_TOLERANCE", self.env.mode)
         app.config.setdefault("LIQUID_TEMPLATE_FOLDER", app.template_folder)
         app.config.setdefault("LIQUID_AUTOESCAPE", self.env.autoescape)
         app.config.setdefault("LIQUID_AUTO_RELOAD", self.env.auto_reload)

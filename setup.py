@@ -6,7 +6,7 @@ with open("README.rst", "r", encoding="utf-8") as fd:
 
 setuptools.setup(
     name="Flask-Liquid",
-    version="0.4.1",
+    version="1.0.0",
     description="A Flask extension for rendering Liquid templates.",
     long_description=long_description,
     long_description_content_type="text/x-rst",
@@ -14,12 +14,12 @@ setuptools.setup(
     packages=setuptools.find_packages(exclude=["tests*"]),
     include_package_data=True,
     zip_safe=False,
-    install_requires=["flask>=0.7", "MarkupSafe>=2.0.0", "python-liquid>=0.7.7"],
+    install_requires=["flask>=1.0", "MarkupSafe>=2.0.0", "python-liquid>=1.1.0"],
     test_suite="tests",
     python_requires=">=3.7",
     licence="MIT",
     classifiers=[
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3",
@@ -31,7 +31,9 @@ setuptools.setup(
         "Programming Language :: Python :: Implementation :: PyPy",
     ],
     project_urls={
+        "Documentation": "https://jg-rp.github.io/liquid/guides/flask-liquid",
         "Issue Tracker": "https://github.com/jg-rp/Flask-Liquid/issues",
         "Source Code": "https://github.com/jg-rp/Flask-Liquid",
+        "Change Log": "https://github.com/jg-rp/Flask-Liquid/blob/main/CHANGES.rst",
     },
 )
