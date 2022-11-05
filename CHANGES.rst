@@ -1,6 +1,18 @@
 Flask Liquid Change Log
 =======================
 
+Version 1.1.0
+-------------
+
+- We now use ``flask.globals.request_ctx`` instead of ``flask._request_ctx_stack`` when
+  it is available. ``_request_ctx_stack`` is depreciated since Flask version 2.2.0 and
+  will be removed in 2.3.0. 
+
+Version 1.0.0
+-------------
+
+First stable release.
+
 Version 0.4.1
 -------------
 

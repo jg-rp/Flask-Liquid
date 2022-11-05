@@ -8,23 +8,23 @@ Flask-Liquid
 A `Flask <https://palletsprojects.com/p/flask/>`_ extension for `Liquid`_. Render Liquid
 templates in your Flask applications.
 
-.. image:: https://img.shields.io/pypi/v/flask-liquid.svg
+.. image:: https://img.shields.io/pypi/v/flask-liquid.svg?style=flat-square
     :target: https://pypi.org/project/flask-liquid/
     :alt: Version
 
-.. image:: https://github.com/jg-rp/flask-liquid/actions/workflows/tests.yaml/badge.svg
+.. image:: https://img.shields.io/github/workflow/status/jg-rp/flask-liquid/Tests/main?label=tests&style=flat-square
     :target: https://github.com/jg-rp/flask-liquid/tree/main/tests
     :alt: Tests
 
-.. image:: https://img.shields.io/pypi/l/flask-liquid.svg
+.. image:: https://img.shields.io/pypi/l/flask-liquid.svg?style=flat-square
     :target: https://pypi.org/project/flask-liquid/
     :alt: Licence
 
-.. image:: https://img.shields.io/pypi/pyversions/flask-liquid.svg
+.. image:: https://img.shields.io/pypi/pyversions/flask-liquid.svg?style=flat-square
     :target: https://pypi.org/project/flask-liquid/
     :alt: Python versions
 
-.. image:: https://img.shields.io/badge/pypy-3.7%20%7C%203.8-blue
+.. image:: https://img.shields.io/badge/pypy-3.7%20%7C%203.8-blue?style=flat-square
     :target: https://pypi.org/project/flask-liquid/
     :alt: PyPy versions
 
