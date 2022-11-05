@@ -12,7 +12,7 @@ coverage:
 
 .PHONY: build
 build: clean
-	python setup.py sdist bdist_wheel
+	python -m build
 
 .PHONY: clean
 clean:

@@ -1,3 +1,4 @@
+# type: ignore
 """Flask-Liquid test cases."""
 
 import os

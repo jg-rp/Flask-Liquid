@@ -6,6 +6,7 @@ from itertools import chain
 
 from typing import Any
 from typing import Callable
+from typing import cast
 from typing import Dict
 from typing import Iterable
 from typing import Iterator
@@ -18,7 +19,20 @@ from flask import current_app
 from flask import signals_available
 from flask import template_rendered
 from flask import before_render_template
-from flask import _request_ctx_stack
+from flask.ctx import RequestContext
+
+try:
+    from flask.globals import request_ctx
+
+    def _request_ctx() -> RequestContext:
+        return request_ctx
+
+except ImportError:
+    from flask import _request_ctx_stack
+
+    def _request_ctx() -> RequestContext:
+        return cast(RequestContext, _request_ctx_stack.top)
+
 
 from liquid import Environment
 from liquid import Mode
@@ -263,7 +277,7 @@ class Liquid:
         if self.flask_context_processors and self.app:
             processors = self.app.template_context_processors
             funcs: Iterable[TemplateContextProcessorCallable] = processors[None]
-            request_context = _request_ctx_stack.top
+            request_context = _request_ctx()
             if request_context is not None:
                 blueprint = request_context.request.blueprint
                 if blueprint is not None and blueprint in processors:

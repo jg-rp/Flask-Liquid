@@ -20,6 +20,9 @@ flake8-bugbear = "*"
 twine = "*"
 mypy = "*"
 types-cryptography = "*"
+build = "*"
+tox = "*"
+pytest = "*"
 
 [requires]
 python_version = "3.10"
