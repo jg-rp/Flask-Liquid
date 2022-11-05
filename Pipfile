@@ -4,10 +4,10 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-flask = {extras = ["async"], version = "*"}
 python-liquid = "*"
 flask-liquid = {editable = true, path = "."}
 blinker = "*"
+flask = {extras = ["async"], version = "*"}
 
 [dev-packages]
 black = "*"
@@ -22,7 +22,7 @@ mypy = "*"
 types-cryptography = "*"
 
 [requires]
-python_version = "3.8"
+python_version = "3.10"
 
 [pipenv]
 allow_prereleases = true
