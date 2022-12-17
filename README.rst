@@ -12,7 +12,7 @@ templates in your Flask applications.
     :target: https://pypi.org/project/flask-liquid/
     :alt: Version
 
-.. image:: https://img.shields.io/github/workflow/status/jg-rp/flask-liquid/Tests/main?label=tests&style=flat-square
+.. image:: https://img.shields.io/github/actions/workflow/status/jg-rp/flask-liquid/tests.yaml?branch=main&label=tests&style=flat-square
     :target: https://github.com/jg-rp/flask-liquid/tree/main/tests
     :alt: Tests
 
