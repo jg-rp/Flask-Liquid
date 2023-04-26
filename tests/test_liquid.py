@@ -3,37 +3,27 @@
 
 import os
 import tempfile
-
 from contextlib import contextmanager
 from unittest import TestCase
-from unittest import skipIf
 
-import flask
-from flask import Flask
 from flask import Blueprint
-from flask import template_rendered
+from flask import Flask
 from flask import before_render_template
-
-from liquid import Undefined
+from flask import template_rendered
 from liquid import StrictUndefined
-
-from liquid.exceptions import UndefinedError
+from liquid import Undefined
 from liquid.exceptions import NoSuchFilterFunc
-
+from liquid.exceptions import UndefinedError
 from liquid.loaders import DictLoader
 
 from flask_liquid import Liquid
 from flask_liquid import render_template
-from flask_liquid import render_template_string
 from flask_liquid import render_template_async
+from flask_liquid import render_template_string
 from flask_liquid import render_template_string_async
 
 
-SKIP_ASYNC = bool(int(flask.__version__[0]) < 2)
-
-
-# pylint: disable=redefined-builtin unused-variable
-def create_app(config, globals=None, loader=None):
+def create_app(config, globals=None, loader=None):  # noqa: A002
     """Test Flask application factory."""
     app = Flask(__name__)
     app.testing = True
@@ -69,7 +59,6 @@ def create_app(config, globals=None, loader=None):
     def with_context_from_processor():
         return render_template_string(r"{{ username }}")
 
-    # pylint: disable=invalid-name
     bp = Blueprint("blue", __name__, url_prefix="/blue")
 
     @bp.route("/greeting")
@@ -84,8 +73,7 @@ def create_app(config, globals=None, loader=None):
     return app
 
 
-# pylint: disable=redefined-builtin unused-variable
-def create_async_app(config, globals=None, loader=None):
+def create_async_app(config, globals=None, loader=None):  # noqa: A002
     """Test Flask application factory."""
     app = Flask(__name__)
     app.testing = True
@@ -131,8 +119,7 @@ def capture_template_rendered(app):
     """Utility context manager for capturing signals."""
     recorded = []
 
-    # pylint: disable=unused-argument
-    def record(_, template, context, **extra):
+    def record(_, template, context, **extra):  # noqa: ARG001
         recorded.append((template, context))
 
     template_rendered.connect(record, app)
@@ -147,8 +134,7 @@ def capture_before_render_templates(app):
     """Utility context manager for capturing signals."""
     recorded = []
 
-    # pylint: disable=unused-argument
-    def record(_, template, context, **extra):
+    def record(_, template, context, **extra):  # noqa: ARG001
         recorded.append((template, context))
 
     before_render_template.connect(record, app)
@@ -208,7 +194,7 @@ class DefaultLiquidTestCase(TestCase):
             self.assertEqual("index.html", template.name)
 
     def test_before_render_template_signal(self):
-        """Test that the before_rendered_tempplate signal is fired before a
+        """Test that the before_rendered_template signal is fired before a
         liquid template is rendered."""
         with capture_before_render_templates(self.app) as templates:
             resp = self.app.test_client().get("/rendertemplate")
@@ -218,7 +204,6 @@ class DefaultLiquidTestCase(TestCase):
             self.assertEqual("index.html", template.name)
 
 
-@skipIf(SKIP_ASYNC, "async views require flask>=2")
 class AsyncLiquidTestCase(DefaultLiquidTestCase):
     """Async Flask-Liquid test case."""
 
@@ -289,7 +274,6 @@ class FlaskContextTestCase(TestCase):
             resp = client.get("/contextprocessor")
             self.assertEqual(resp.data, b"some")
 
-    @skipIf(SKIP_ASYNC, "async views require flask>=2")
     def test_context_processor_async(self):
         """Test that we can use context variables from context processors in liquid
         templates."""
@@ -326,8 +310,7 @@ class NoSignalsTestCase(TestCase):
             self.assertEqual(len(templates), 0)
 
     def test_before_render_template_signal(self):
-        """Test that the before_rendered_tempplate signal is not fired when
-        send_flask_signals is False"""
+        """Test disable before_rendered_template signal."""
         with capture_before_render_templates(self.app) as templates:
             resp = self.app.test_client().get("/rendertemplate")
             self.assertEqual(resp.data, b"Hello World")
@@ -419,7 +402,7 @@ class LiquidEnvironmentTestCase(TestCase):
             self.assertEqual(result, "Hello, World!")
 
     def test_expression_cache(self):
-        """Test that we can enable expresssion caching."""
+        """Test that we can enable expression caching."""
         app = create_app(
             config={"LIQUID_EXPRESSION_CACHE_SIZE": 1},
             globals={"username": "You"},
