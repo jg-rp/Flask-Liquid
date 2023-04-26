@@ -24,7 +24,7 @@ A <a href="https://palletsprojects.com/p/flask/">Flask</a> extension for <a href
 
 ## Install
 
-Install Django Liquid using [pip](https://pip.pypa.io/en/stable/getting-started/):
+Install Flask Liquid using [pip](https://pip.pypa.io/en/stable/getting-started/):
 
 ```console
 pip install flask-liquid

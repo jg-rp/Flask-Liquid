@@ -23,7 +23,6 @@ from flask_liquid import render_template_string
 from flask_liquid import render_template_string_async
 
 
-# pylint: disable=redefined-builtin unused-variable
 def create_app(config, globals=None, loader=None):  # noqa: A002
     """Test Flask application factory."""
     app = Flask(__name__)
@@ -60,7 +59,6 @@ def create_app(config, globals=None, loader=None):  # noqa: A002
     def with_context_from_processor():
         return render_template_string(r"{{ username }}")
 
-    # pylint: disable=invalid-name
     bp = Blueprint("blue", __name__, url_prefix="/blue")
 
     @bp.route("/greeting")
