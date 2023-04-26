@@ -1,6 +1,14 @@
 Flask Liquid Change Log
 =======================
 
+Version 1.2.0
+-------------
+
+- Only clear environment-wide template cache if the cache is not `None`. Python Liquid
+  version 1.9.0 changed `liquid.Environment.cache` to be `Optional[Mapping]`.
+- Handle future depreciation of `flask.signals_available`.
+- Require Flask version 2.
+
 Version 1.1.0
 -------------
 

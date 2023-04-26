@@ -1,25 +1,32 @@
 """Add Liquid templates to a Flask application."""
 from __future__ import annotations
 
+import warnings
 from contextlib import contextmanager
 from itertools import chain
-
+from typing import TYPE_CHECKING
 from typing import Any
 from typing import Callable
-from typing import cast
 from typing import Dict
 from typing import Iterable
 from typing import Iterator
 from typing import Mapping
 from typing import Optional
 from typing import Type
+from typing import cast
 
 from flask import Flask
-from flask import current_app
-from flask import signals_available
-from flask import template_rendered
 from flask import before_render_template
+from flask import current_app
+from flask import template_rendered
 from flask.ctx import RequestContext
+
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore", category=DeprecationWarning)
+    try:
+        from flask import signals_available
+    except ImportError:
+        signals_available = True
 
 try:
     from flask.globals import request_ctx
@@ -37,12 +44,11 @@ except ImportError:
 from liquid import Environment
 from liquid import Mode
 from liquid import Undefined
-
-from liquid.template import BoundTemplate
-
 from liquid.loaders import BaseLoader
 from liquid.loaders import FileSystemLoader
 
+if TYPE_CHECKING:
+    from liquid.template import BoundTemplate
 
 TemplateContextProcessorCallable = Callable[[], Dict[str, Any]]
 
@@ -116,7 +122,6 @@ class Liquid:
         `before_template_rendered` signals will be emitted for Liquid templates.
     """
 
-    # pylint: disable=redefined-builtin too-many-arguments too-many-locals
     def __init__(
         self,
         app: Optional[Flask] = None,
@@ -134,7 +139,7 @@ class Liquid:
         strict_filters: bool = True,
         autoescape: bool = True,
         auto_reload: bool = True,
-        globals: Optional[Mapping[str, object]] = None,
+        globals: Optional[Mapping[str, object]] = None,  # noqa: A002
         flask_context_processors: bool = False,
         flask_signals: bool = True,
         cache_size: int = 300,
@@ -263,7 +268,8 @@ class Liquid:
         self.env.set_expression_cache_size(app.config["LIQUID_EXPRESSION_CACHE_SIZE"])
 
         # Just in case init_app is called late and templates have already been loaded.
-        self.env.cache.clear()
+        if self.env.cache:
+            self.env.cache.clear()
 
         app.extensions["flask_liquid"] = self
         self.app = app
@@ -315,9 +321,7 @@ class Liquid:
         template = self.env.get_template(template_name)
 
         with self._signals(template, context):
-            rendered = template.render(**context)
-
-        return rendered
+            return template.render(**context)
 
     async def render_template_async(self, template_name: str, **context: object) -> str:
         """Render a Liquid template from the configured template loader."""
@@ -325,9 +329,7 @@ class Liquid:
         template = await self.env.get_template_async(template_name)
 
         with self._signals(template, context):
-            rendered = await template.render_async(**context)
-
-        return rendered
+            return await template.render_async(**context)
 
     def render_template_string(self, source: str, **context: object) -> str:
         """Render a Liquid template from a template string."""
@@ -335,9 +337,7 @@ class Liquid:
         template = self.env.from_string(source)
 
         with self._signals(template, context):
-            rendered = template.render(**context)
-
-        return rendered
+            return template.render(**context)
 
     async def render_template_string_async(self, source: str, **context: object) -> str:
         """Render a Liquid template from a template string."""
@@ -345,9 +345,7 @@ class Liquid:
         template = self.env.from_string(source)
 
         with self._signals(template, context):
-            rendered = await template.render_async(**context)
-
-        return rendered
+            return await template.render_async(**context)
 
 
 def render_template(template_name: str, **context: object) -> str:
@@ -363,14 +361,12 @@ async def render_template_async(template_name: str, **context: object) -> str:
 
 
 def render_template_string(source: str, **context: object) -> str:
-    """Render a Liquid template from a string in the current Flask application
-    context."""
+    """Render a template from a string in the current Flask application context."""
     ext: Liquid = current_app.extensions["flask_liquid"]
     return ext.render_template_string(source, **context)
 
 
 async def render_template_string_async(source: str, **context: object) -> str:
-    """Render a Liquid template from a string in the current Flask application
-    context."""
+    """Render a template from a string in the current Flask application context."""
     ext: Liquid = current_app.extensions["flask_liquid"]
     return await ext.render_template_string_async(source, **context)
