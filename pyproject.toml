@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "Flask-Liquid"
 dynamic = ["version"]
 description = "A Flask extension for rendering Liquid templates."
-readme = "README.rst"
+readme = "README.md"
 license = "MIT"
 requires-python = ">=3.7"
 classifiers = [
@@ -24,7 +24,7 @@ classifiers = [
 dependencies = ["flask>=2.0", "MarkupSafe>=2.0.0", "python-liquid>=1.1.0"]
 
 [project.urls]
-"Change Log" = "https://github.com/jg-rp/flask-liquid/blob/main/CHANGES.rst"
+"Change Log" = "https://github.com/jg-rp/flask-liquid/blob/main/CHANGES.md"
 Documentation = "https://jg-rp.github.io/liquid/guides/flask-liquid"
 Homepage = "https://github.com/jg-rp/flask-liquid"
 "Issue Tracker" = "https://github.com/jg-rp/flask-liquid/issues"
