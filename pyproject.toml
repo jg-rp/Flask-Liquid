@@ -8,18 +8,18 @@ dynamic = ["version"]
 description = "A Flask extension for rendering Liquid templates."
 readme = "README.md"
 license = "MIT"
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
 ]
 dependencies = ["flask>=2.0", "MarkupSafe>=2.0.0", "python-liquid>=1.1.0"]
 
@@ -62,7 +62,18 @@ lint = "ruff check ."
 typing = "mypy"
 
 [[tool.hatch.envs.test.matrix]]
-python = ["37", "38", "39", "310", "311", "pypy38", "pypy39"]
+python = ["38", "39", "310", "311", "312", "pypy38", "pypy39", "pypy310"]
+flask = ["2", "3"]
+
+[tool.hatch.envs.test.overrides]
+matrix.flask.dependencies = [
+    { value = "flask==2.3.3", if = [
+        "2",
+    ] },
+    { value = "flask>=3.0", if = [
+        "3",
+    ] },
+]
 
 [tool.hatch.envs.test.scripts]
 test = "pytest {args}"
