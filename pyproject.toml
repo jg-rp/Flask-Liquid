@@ -8,7 +8,7 @@ dynamic = ["version"]
 description = "A Flask extension for rendering Liquid templates."
 readme = "README.md"
 license = "MIT"
-requires-python = ">=3.8"
+requires-python = ">=3.7"
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
