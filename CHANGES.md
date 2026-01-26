@@ -1,5 +1,11 @@
 # Flask Liquid Change Log
 
+## Version 2.0.0 (unreleased)
+
+- Dropped support for Python Liquid version 1.x. We now require Python Liquid >= 2.0.0.
+- Dropped support for Python versions 3.7, 3.8 and 3.9. We now require Python >= 3.10.
+- Dropped support for Flask version 2. We now require Flask >= 3.0.0.
+
 ## Version 1.2.0
 
 - Only clear environment-wide template cache if the cache is not `None`. Python Liquid
