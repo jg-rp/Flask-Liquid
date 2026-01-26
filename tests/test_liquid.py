@@ -6,15 +6,16 @@ import tempfile
 from contextlib import contextmanager
 from unittest import TestCase
 
+import pytest
 from flask import Blueprint
 from flask import Flask
 from flask import before_render_template
 from flask import template_rendered
+from liquid import DictLoader
 from liquid import StrictUndefined
 from liquid import Undefined
-from liquid.exceptions import NoSuchFilterFunc
 from liquid.exceptions import UndefinedError
-from liquid.loaders import DictLoader
+from liquid.exceptions import UnknownFilterError
 
 from flask_liquid import Liquid
 from flask_liquid import render_template
@@ -337,7 +338,7 @@ class LiquidEnvironmentTestCase(TestCase):
         )
 
         with app.app_context():
-            with self.assertRaises(UndefinedError):
+            with pytest.raises(UndefinedError):
                 _ = render_template_string(r"Hello, {{ nosuchthing }}.")
 
     def test_lax_filters(self):
@@ -359,7 +360,7 @@ class LiquidEnvironmentTestCase(TestCase):
         )
 
         with app.app_context():
-            with self.assertRaises(NoSuchFilterFunc):
+            with pytest.raises(UnknownFilterError):
                 _ = render_template_string(r"Hello, {{ username | upper }}.")
 
     def test_autoescape(self):
@@ -400,12 +401,3 @@ class LiquidEnvironmentTestCase(TestCase):
         with app.app_context():
             result = render_template_string(r"Hello, {# some comment -#} World!")
             self.assertEqual(result, "Hello, World!")
-
-    def test_expression_cache(self):
-        """Test that we can enable expression caching."""
-        app = create_app(
-            config={"LIQUID_EXPRESSION_CACHE_SIZE": 1},
-            globals={"username": "You"},
-        )
-        ext: Liquid = app.extensions["flask_liquid"]
-        self.assertTrue(hasattr(ext.env.parse_filtered_expression_value, "cache_info"))

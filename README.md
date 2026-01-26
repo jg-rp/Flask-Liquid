@@ -38,7 +38,8 @@ pipenv install -u flask-liquid
 
 ## Links
 
-- Documentation: https://jg-rp.github.io/liquid/guides/flask-liquid
+- Documentation: (Just this README) https://github.com/jg-rp/Flask-Liquid/blob/main/README.md
+- Documentation for Flask Liquid version 1.x: https://jg-rp.github.io/python-liquid-docs-archive/guides/flask-liquid
 - Change Log: https://github.com/jg-rp/flask-liquid/blob/main/CHANGES.md
 - PyPi: https://pypi.org/project/flask-liquid/
 - Source Code: https://github.com/jg-rp/flask-liquid
