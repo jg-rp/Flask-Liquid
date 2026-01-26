@@ -1,5 +1,9 @@
 # Flask Liquid Change Log
 
+## Version 2.0.1
+
+Fix package classifiers.
+
 ## Version 2.0.0
 
 - Dropped support for Python Liquid version 1.x. We now require Python Liquid >= 2.0.0.
